@@ -4,41 +4,42 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/api";
 import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
 
 export default function JoinPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleJoin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      const res = await fetchApi("/auth/join", {
+  const joinMutation = useMutation({
+    mutationFn: async () => {
+      return fetchApi("/auth/join", {
         method: "POST",
         body: JSON.stringify({ name, email, password }),
       });
-
-      if (res.accessToken) {
-        localStorage.setItem("accessToken", res.accessToken);
-        localStorage.setItem("refreshToken", res.refreshToken);
-        router.push("/dashboard"); // Redirect after successful join
+    },
+    onSuccess: (data) => {
+      if (data.accessToken) {
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
+        router.push("/dashboard");
       }
-    } catch (err: any) {
-      // Handle NestJS validation errors (array of messages)
+    },
+    onError: (err: any) => {
       if (Array.isArray(err.message)) {
-        setError(err.message.join(", "));
+        setErrorMsg(err.message.join(", "));
       } else {
-        setError(err.message || "Failed to create account");
+        setErrorMsg(err.message || "Failed to create account");
       }
-    } finally {
-      setLoading(false);
-    }
+    },
+  });
+
+  const handleJoin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg("");
+    joinMutation.mutate();
   };
 
   return (
@@ -47,13 +48,13 @@ export default function JoinPage() {
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl overflow-hidden p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Create Account</h1>
-            <p className="text-zinc-400">Join Metal Alert to start configuring your workflows</p>
+            <p className="text-zinc-400">Join Metal to start configuring your workflows</p>
           </div>
 
           <form onSubmit={handleJoin} className="space-y-6">
-            {error && (
+            {errorMsg && (
               <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-sm">
-                {error}
+                {errorMsg}
               </div>
             )}
 
@@ -68,7 +69,7 @@ export default function JoinPage() {
                 placeholder="Jane Doe"
               />
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm font-medium text-zinc-300">Email Address</label>
               <input
@@ -96,10 +97,10 @@ export default function JoinPage() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={joinMutation.isPending}
               className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Creating Account..." : "Create Account"}
+              {joinMutation.isPending ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 
