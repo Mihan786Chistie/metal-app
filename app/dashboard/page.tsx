@@ -50,27 +50,25 @@ export default function DashboardPage() {
   
   const availableFields = {
     "General": [
-      { id: "entityId", name: "Entity ID", value: "entityId" },
+      { id: "userName", name: "Triggered By", value: "userName" },
       { id: "entityType", name: "Entity Type", value: "entityType" },
-      { id: "entityName", name: "Entity Name", value: "entityName" },
-      { id: "entityUrl", name: "Entity URL", value: "entityUrl" },
       { id: "eventType", name: "Event Type", value: "eventType" },
+      { id: "entityFullyQualifiedName", name: "Entity FQN", value: "entityFullyQualifiedName" },
       { id: "timestamp", name: "Timestamp", value: "timestamp" },
-      { id: "updatedBy", name: "Updated By", value: "updatedBy" },
+      { id: "currentVersion", name: "Version", value: "currentVersion" },
     ],
-    "Details": [
-      { id: "changeDescription", name: "Change Description", value: "changeDescription" },
-      { id: "status", name: "Status", value: "status" },
-      { id: "owner", name: "Owner", value: "owner" },
-      { id: "service", name: "Service", value: "service" },
-      { id: "database", name: "Database", value: "database" },
-      { id: "schema", name: "Schema", value: "schema" },
+    "Entity Details": [
+      { id: "entityStatus", name: "Entity Status", value: "entity.entityStatus" },
+      { id: "entityOwner", name: "Entity Owner", value: "entity.owners.0.name" },
+      { id: "entityCreatedBy", name: "Created By", value: "entity.createdBy" },
+      { id: "entityCreatedAt", name: "Created At", value: "entity.createdAt" },
     ],
-    "Advanced": [
-      { id: "tags", name: "Tags", value: "tags" },
-      { id: "glossaryTerms", name: "Glossary Terms", value: "glossaryTerms" },
-      { id: "domain", name: "Domain", value: "domain" },
-      { id: "extension", name: "Extension", value: "extension" },
+    "Change Details": [
+      { id: "updatedField", name: "Updated Field", value: "changeDescription.fieldsUpdated.0.name" },
+      { id: "contractStatus", name: "Contract Status", value: "changeDescription.fieldsUpdated.0.newValue.dataContractResult.contractExecutionStatus" },
+      { id: "failedTests", name: "Failed Tests", value: "changeDescription.fieldsUpdated.0.newValue.dataContractResult.qualityValidation.failed" },
+      { id: "passedTests", name: "Passed Tests", value: "changeDescription.fieldsUpdated.0.newValue.dataContractResult.qualityValidation.passed" },
+      { id: "qualityScore", name: "Quality Score", value: "changeDescription.fieldsUpdated.0.newValue.dataContractResult.qualityValidation.qualityScore" },
     ]
   };
 
